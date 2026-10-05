@@ -1,0 +1,8 @@
+# Optional heavy ML dependencies. When installed, the recommender uses BoTorch
+# (GPyTorch GP + LogExpectedImprovement) and EIS files are fit with an equivalent
+# circuit via impedance.py. Without them, CellLoop falls back to its built-in
+# NumPy/SciPy Gaussian process and intercept-based impedance analysis.
+-r requirements.txt
+torch>=2.3
+botorch>=0.12
+impedance>=1.7

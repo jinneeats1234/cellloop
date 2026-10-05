@@ -1,0 +1,39 @@
+Northgate University — SOFC Characterization Lab
+Test report NG-2026-118 (prepared for CellLoop program)
+
+Cell ID: NG-MS-118
+Lab: Northgate University SOFC Characterization Lab
+Operator: J. Okafor
+Test date: 2026-09-29
+
+Cell architecture
+Metal support: Ferritic stainless 430L
+Anode: Ni-YSZ 60:40 wt%
+Electrolyte: 8YSZ
+Cathode: LSCF-GDC
+Anode thickness: 32 µm
+Electrolyte thickness: 4.5 µm
+Cathode thickness: 28 µm
+Active area: 1.0 cm2
+
+Processing
+Sintering temperature: 1255 °C
+Sintering time: 2 h
+Sintering atmosphere: reducing (2% H2/Ar)
+Coating: MnCo2O4 spinel
+Coating thickness: 7 µm
+
+Test conditions
+Operating temperature: 650 °C
+Fuel: 97% H2 / 3% H2O
+Oxidant: air
+
+Results
+Total ASR: 0.29 ohm cm2
+Ohmic ASR: 0.09 ohm cm2
+Polarization ASR: 0.20 ohm cm2
+Peak power density: 0.92 W/cm2
+OCV: 1.09 V
+Degradation rate: 1.8 %/kh
+Thermal cycles: 25
+Notes: No delamination observed after 25 cycles to 200 °C at 10 °C/min. Slight Cr signal at the cathode interface by EDS.

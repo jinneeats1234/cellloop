@@ -1,0 +1,11 @@
+{
+  "name": "cellloop",
+  "private": true,
+  "description": "Run `npm start` (or ./start.sh) to launch the CellLoop API and web app together.",
+  "scripts": {
+    "start": "bash start.sh",
+    "dev": "bash start.sh",
+    "reseed": "bash start.sh --reseed",
+    "test": "cd backend && .venv/bin/python -m pytest"
+  }
+}

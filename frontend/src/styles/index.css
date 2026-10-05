@@ -1,0 +1,434 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* ------------------------------------------------------------------------------------------
+   Design tokens. Every colour in the UI and the charts comes from here, so light and dark
+   mode (and any future rebrand) change in one place. Plot.tsx reads the chart roles at render.
+   ------------------------------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  /* surfaces */
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-2: #f9f9f8;
+  --surface-3: #f2f2ef;
+  --border: #e9e8e4;
+  --border-strong: #dad9d4;
+  /* text */
+  --text: #1b1b1f;
+  --text-2: #5d5d66;
+  --text-3: #8e8e97;
+  /* accent */
+  --accent: #2b5fd9;
+  --accent-hover: #234fb8;
+  --accent-soft: rgba(43, 95, 217, 0.07);
+  --accent-ring: rgba(43, 95, 217, 0.18);
+  --on-accent: #ffffff;
+  /* status (each paired with an icon or label in the UI, never colour alone) */
+  --success: #1f7a4d;
+  --success-soft: #eff7f2;
+  --success-line: #cfe6d9;
+  --warn: #9a6200;
+  --warn-soft: #fdf7ea;
+  --warn-line: #f0dfb6;
+  --danger: #b4321f;
+  --danger-soft: #fdf2f0;
+  --danger-line: #f2d2cb;
+  --info: #2b5fd9;
+  --info-soft: #f2f6fe;
+  --info-line: #d6e1f8;
+  --shadow: 0 1px 2px rgba(20, 20, 30, 0.04), 0 1px 1px rgba(20, 20, 30, 0.02);
+
+  /* chart roles (reference data-viz palette) */
+  --surface-0: var(--bg);
+  --surface-1: var(--surface);
+  --text-primary: var(--text);
+  --text-secondary: var(--text-2);
+  --text-muted: #a3a3ab;
+  --grid: #efeeea;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --reference: #6b6b73;
+  --good: var(--success);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0f1012;
+    --surface: #16171a;
+    --surface-2: #1a1c1f;
+    --surface-3: #202226;
+    --border: #25272c;
+    --border-strong: #31343a;
+    --text: #ececef;
+    --text-2: #a3a3ad;
+    --text-3: #74747e;
+    --accent: #7aa2f7;
+    --accent-hover: #93b4f9;
+    --accent-soft: rgba(122, 162, 247, 0.1);
+    --accent-ring: rgba(122, 162, 247, 0.25);
+    --on-accent: #0c1222;
+    --success: #6fcf97;
+    --success-soft: rgba(111, 207, 151, 0.08);
+    --success-line: rgba(111, 207, 151, 0.22);
+    --warn: #e7b65c;
+    --warn-soft: rgba(231, 182, 92, 0.08);
+    --warn-line: rgba(231, 182, 92, 0.24);
+    --danger: #f08b7a;
+    --danger-soft: rgba(240, 139, 122, 0.08);
+    --danger-line: rgba(240, 139, 122, 0.24);
+    --info: #7aa2f7;
+    --info-soft: rgba(122, 162, 247, 0.08);
+    --info-line: rgba(122, 162, 247, 0.22);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --text-muted: #6c6c75;
+    --grid: #232529;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --reference: #a3a3ad;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1012;
+  --surface: #16171a;
+  --surface-2: #1a1c1f;
+  --surface-3: #202226;
+  --border: #25272c;
+  --border-strong: #31343a;
+  --text: #ececef;
+  --text-2: #a3a3ad;
+  --text-3: #74747e;
+  --accent: #7aa2f7;
+  --accent-hover: #93b4f9;
+  --accent-soft: rgba(122, 162, 247, 0.1);
+  --accent-ring: rgba(122, 162, 247, 0.25);
+  --on-accent: #0c1222;
+  --success: #6fcf97;
+  --success-soft: rgba(111, 207, 151, 0.08);
+  --success-line: rgba(111, 207, 151, 0.22);
+  --warn: #e7b65c;
+  --warn-soft: rgba(231, 182, 92, 0.08);
+  --warn-line: rgba(231, 182, 92, 0.24);
+  --danger: #f08b7a;
+  --danger-soft: rgba(240, 139, 122, 0.08);
+  --danger-line: rgba(240, 139, 122, 0.24);
+  --info: #7aa2f7;
+  --info-soft: rgba(122, 162, 247, 0.08);
+  --info-line: rgba(122, 162, 247, 0.22);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --text-muted: #6c6c75;
+  --grid: #232529;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --reference: #a3a3ad;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+::selection {
+  background: var(--accent-ring);
+}
+:focus-visible {
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 2px;
+}
+pre,
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@layer components {
+  /* Surfaces */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--text);
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .muted {
+    color: var(--text-2);
+  }
+  .subtle {
+    color: var(--text-3);
+  }
+  .link {
+    color: var(--accent);
+    text-underline-offset: 3px;
+  }
+  .link:hover {
+    text-decoration: underline;
+  }
+  .divider {
+    border-top: 1px solid var(--border);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 7px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease,
+      color 120ms ease,
+      box-shadow 120ms ease;
+    box-shadow: 0 1px 1px rgba(20, 20, 30, 0.03);
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--surface-3);
+  }
+  .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .btn-ghost {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+  .btn-danger {
+    color: var(--danger);
+    border-color: var(--danger-line);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: var(--danger-soft);
+  }
+  .btn-sm {
+    height: 26px;
+    padding: 0 9px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  /* Forms */
+  .label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .input {
+    width: 100%;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition:
+      border-color 120ms ease,
+      box-shadow 120ms ease;
+  }
+  textarea.input {
+    height: auto;
+    padding: 8px 10px;
+    line-height: 1.5;
+  }
+  select.input {
+    padding-right: 28px;
+  }
+  .input::placeholder {
+    color: var(--text-3);
+  }
+  .input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+  .input:disabled {
+    background: var(--surface-2);
+    color: var(--text-2);
+  }
+  .input-error,
+  .input-error:focus {
+    border-color: var(--danger);
+  }
+  .input-error:focus {
+    box-shadow: 0 0 0 3px var(--danger-line);
+  }
+  .input-warn {
+    border-color: var(--warn);
+  }
+  .input-changed {
+    border-color: var(--accent);
+  }
+
+  /* Tables */
+  .table {
+    width: 100%;
+    text-align: left;
+    font-size: 13px;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .table th {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-3);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .table td {
+    padding: 11px 12px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+  .table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .table tbody tr {
+    transition: background-color 100ms ease;
+  }
+  .table tbody tr:hover td {
+    background: var(--surface-2);
+  }
+
+  /* Notes / callouts */
+  .note {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .note-info {
+    background: var(--info-soft);
+    border-color: var(--info-line);
+    color: var(--text);
+  }
+  .note-warn {
+    background: var(--warn-soft);
+    border-color: var(--warn-line);
+    color: var(--text);
+  }
+  .note-error {
+    background: var(--danger-soft);
+    border-color: var(--danger-line);
+    color: var(--text);
+  }
+  .note-title {
+    font-weight: 600;
+  }
+
+  /* Badges: soft tint + dot + label */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+    flex: none;
+  }
+  .badge-success {
+    background: var(--success-soft);
+    border-color: var(--success-line);
+    color: var(--success);
+  }
+  .badge-warn {
+    background: var(--warn-soft);
+    border-color: var(--warn-line);
+    color: var(--warn);
+  }
+  .badge-danger {
+    background: var(--danger-soft);
+    border-color: var(--danger-line);
+    color: var(--danger);
+  }
+  .badge-info {
+    background: var(--info-soft);
+    border-color: var(--info-line);
+    color: var(--info);
+  }
+
+  /* Segmented control */
+  .segmented {
+    display: inline-flex;
+    padding: 2px;
+    gap: 2px;
+    border-radius: 8px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+  }
+  .segmented button {
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .segmented button[aria-pressed="true"] {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+}

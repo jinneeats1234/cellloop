@@ -1,0 +1,53 @@
+# Local full stack: Postgres + pgvector, FastAPI, and the built React app behind nginx.
+#   docker compose up --build
+#   docker compose exec api python -m app.scripts.seed      # demo data
+# Open http://localhost:8080
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: cellloop
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cellloop}   # local only; set a real one in .env
+      POSTGRES_DB: cellloop
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports: ["127.0.0.1:5432:5432"]   # not exposed beyond this machine
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cellloop"]
+      interval: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ./backend
+      additional_contexts:
+        samples: ./samples
+      args:
+        INSTALL_ML: ${INSTALL_ML:-0}
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://cellloop:${POSTGRES_PASSWORD:-cellloop}@db:5432/cellloop
+      CORS_ORIGINS: '["http://localhost:8080","http://localhost:5173"]'
+      LOCAL_STORAGE_DIR: /app/data/uploads
+      # Pass AWS credentials through when LLM_PROVIDER=bedrock / STORAGE_BACKEND=s3
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+    volumes:
+      - uploads:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+    ports: ["127.0.0.1:8000:8000"]
+
+  web:
+    build: ./frontend
+    depends_on: [api]
+    ports: ["8080:80"]
+
+volumes:
+  pgdata:
+  uploads:
