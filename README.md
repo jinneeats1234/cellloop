@@ -182,7 +182,8 @@ cd frontend && npm run typecheck && npm run build
 | Health check | `curl localhost:8000/api/health` (503 if the database is unreachable) |
 | Reset demo data | `npm run reseed` |
 | API only | `cd backend && .venv/bin/python -m uvicorn app.main:app --reload --reload-dir app` |
-| Web app only | `cd frontend && npm run web` (the API must already be running) |
+| Web app only (dev) | `cd frontend && npm run web` (the API must already be running) |
+| Production web server | `cd frontend && npm run build && npm start` (serves the built app on `$PORT`, default 4173) |
 | Optional ML stack | `backend/.venv/bin/pip install -r backend/requirements-ml.txt` (BoTorch, PyTorch, impedance.py) |
 
 ## Deployment
@@ -196,6 +197,18 @@ docker compose up --build
 docker compose exec api python -m app.scripts.seed
 # → http://localhost:8080
 ```
+
+**Web app on its own** (Render, Railway, Fly.io or any Node host). Use `frontend/` as the root directory:
+
+| Setting | Value |
+|---|---|
+| Build command | `npm ci && npm run build` |
+| Start command | `npm start` (runs `server.mjs`: serves `dist/` with deep-link fallback, gzip, caching and security headers) |
+| Environment | `API_URL=https://<your-api-host>` forwards `/api` to the backend. Set the backend's `CORS_ORIGINS` and `FRONTEND_URL` to the web app's URL. |
+| Health check | `/healthz` |
+| Node | 20 or newer (`engines` in `package.json`) |
+
+For a static host (S3 + CloudFront, Netlify), deploy `frontend/dist` with a rewrite of unknown paths to `/index.html`, and build with `VITE_API_BASE=https://<your-api-host>`.
 
 **AWS** (Cognito, RDS with pgvector, S3 with KMS, Bedrock, IAM policy, production checklist):
 see [`docs/deployment-aws.md`](docs/deployment-aws.md).
