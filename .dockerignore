@@ -1,0 +1,15 @@
+# Keep the image small and never copy local secrets or data into it.
+.git
+**/node_modules
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+frontend/dist
+backend/data
+backend/*.db
+**/.env
+**/.env.*
+!**/.env.example
+docs
+.DS_Store

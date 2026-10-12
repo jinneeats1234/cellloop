@@ -198,6 +198,16 @@ docker compose exec api python -m app.scripts.seed
 # → http://localhost:8080
 ```
 
+**Render (free, one service, recommended).** The repository includes a Render Blueprint (`render.yaml`) and a root
+`Dockerfile` that builds the React app and runs it together with the API in one container:
+
+1. Sign in at https://render.com with GitHub, and allow Render to access the `cellloop` repository.
+2. **New → Blueprint** → choose the repository → **Apply**.
+3. When the deploy shows **Live**, open the `https://cellloop-….onrender.com` URL and pick a demo account.
+
+Every push to `main` redeploys automatically. Free-plan notes: the service sleeps after 15 minutes idle (the first
+visit then takes up to a minute), and the demo database is re-created on each deploy or restart.
+
 **Web app on its own** (Render, Railway, Fly.io or any Node host). Use `frontend/` as the root directory:
 
 | Setting | Value |

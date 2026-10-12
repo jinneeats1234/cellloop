@@ -14,6 +14,7 @@ from .core.database import engine, init_db
 from .core.errors import install_error_handlers
 from .core.logging import RequestContextMiddleware, configure_logging
 from .routers import auth, documents, experiments, insights
+from .web import install_static_site
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -67,10 +68,11 @@ for r in (auth.router, documents.router, experiments.router, insights.router):
     app.include_router(r)
 
 
-@app.get("/", include_in_schema=False)
-def root() -> RedirectResponse:
-    """The API has no UI of its own; send people who open it in a browser to the web app."""
-    return RedirectResponse(settings.frontend_url)
+if not settings.resolved_static_dir:
+    @app.get("/", include_in_schema=False)
+    def root() -> RedirectResponse:
+        """No web app served from here; send people who open the API in a browser to the web app."""
+        return RedirectResponse(settings.frontend_url)
 
 
 @app.get("/api/health", tags=["meta"])
@@ -90,3 +92,8 @@ def health() -> JSONResponse:
         "version": app.version,
     }
     return JSONResponse(body, status_code=200 if db_ok else 503)
+
+
+# Single-service deployments: serve the built React app last, after every API route.
+if settings.resolved_static_dir:
+    install_static_site(app, settings.resolved_static_dir)

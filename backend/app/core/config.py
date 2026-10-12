@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     frontend_url: str = "http://localhost:5173"  # where GET / on the API redirects to
+    # Path to a built frontend (frontend/dist). When set, this process also serves the web app,
+    # so one service hosts everything (used by the Dockerfile / Render). Relative to backend/.
+    static_dir: str = ""
     rate_limit_enabled: bool = True
     rate_limit_ai_per_min: int = Field(20, ge=1)       # Q&A + recommendations, per user
     rate_limit_upload_per_min: int = Field(30, ge=1)   # uploads, per user
@@ -117,6 +120,13 @@ class Settings(BaseSettings):
             rel = self.database_url[len(prefix):]
             return prefix + str((BACKEND_DIR / rel).resolve())
         return self.database_url
+
+    @property
+    def resolved_static_dir(self) -> Path | None:
+        if not self.static_dir:
+            return None
+        p = Path(self.static_dir)
+        return p if p.is_absolute() else (BACKEND_DIR / p).resolve()
 
     @property
     def resolved_storage_dir(self) -> Path:
