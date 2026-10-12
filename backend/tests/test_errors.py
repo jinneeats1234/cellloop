@@ -98,3 +98,11 @@ def test_invalid_configuration_is_rejected(overrides, expected):
     with pytest.raises(ValidationError) as exc:
         Settings(_env_file=None, **overrides)
     assert expected in str(exc.value)
+
+
+@pytest.mark.parametrize("given", ["postgres://u:p@db.example:5432/cellloop", "postgresql://u:p@db.example:5432/cellloop",
+                                   "postgresql+psycopg://u:p@db.example:5432/cellloop"])
+def test_host_style_database_urls_use_psycopg3(given):
+    s = Settings(_env_file=None, database_url=given)
+    assert s.database_url == "postgresql+psycopg://u:p@db.example:5432/cellloop"
+    assert s.is_postgres

@@ -11,7 +11,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, ValidationError, model_validator
+from pydantic import Field, ValidationError, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -76,6 +76,16 @@ class Settings(BaseSettings):
     baseline_cycles_to_target: int = Field(40, ge=1)  # cycles-to-target the 25% reduction is measured against
     turnaround_target_hours: float = Field(48.0, gt=0)
 
+    @field_validator("database_url")
+    @classmethod
+    def _psycopg_driver(cls, url: str) -> str:
+        """Hosts (Render, Heroku, Railway, RDS consoles) hand out postgres:// or postgresql:// URLs.
+        SQLAlchemy would read those as psycopg2, which isn't installed; use the psycopg 3 driver."""
+        for prefix in ("postgres://", "postgresql://"):
+            if url.startswith(prefix):
+                return "postgresql+psycopg://" + url[len(prefix):]
+        return url
+
     @model_validator(mode="after")
     def _check_combinations(self) -> "Settings":
         problems = []
@@ -84,7 +94,7 @@ class Settings(BaseSettings):
         if self.storage_backend == "s3" and not self.s3_bucket:
             problems.append("STORAGE_BACKEND=s3 requires S3_BUCKET")
         if not (self.database_url.startswith("postgresql") or self.database_url.startswith("sqlite")):
-            problems.append("DATABASE_URL must start with postgresql+psycopg:// or sqlite:///")
+            problems.append("DATABASE_URL must be a PostgreSQL URL (postgres://, postgresql:// or postgresql+psycopg://) or sqlite:///")
         if self.app_env == "prod":
             if self.auth_mode == "dev":
                 problems.append("AUTH_MODE=dev is not allowed when APP_ENV=prod (use cognito)")

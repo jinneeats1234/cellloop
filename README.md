@@ -202,7 +202,7 @@ docker compose exec api python -m app.scripts.seed
 
 | Setting | Value |
 |---|---|
-| Build command | `npm ci && npm run build` |
+| Build command | `npm ci --include=dev && npm run build` (`--include=dev` keeps the build tools when the host sets `NODE_ENV=production`) |
 | Start command | `npm start` (runs `server.mjs`: serves `dist/` with deep-link fallback, gzip, caching and security headers) |
 | Environment | `API_URL=https://<your-api-host>` forwards `/api` to the backend. Set the backend's `CORS_ORIGINS` and `FRONTEND_URL` to the web app's URL. |
 | Health check | `/healthz` |
